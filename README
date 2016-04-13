@@ -11,5 +11,12 @@
 #########
 ## There should not be any problems in Cloudy itself
 ## For future work, the monitor system will appear as a webpage
-## the current extra.php under check-serf should NOT be used as is :)
+## I've added on System menu - monitor-as which will present the webpage, still needs working
+#########
+## The introduction of docker in cloudy can be seen in the docker page
+## We install a container of a given service (building a docker image), just peerstreamer at the moment
+## Then we can launch the service (in container) as before without the user noticing it is a container
+## The containers can then be stopped when the service is no longer needed/wanted
+## Everytime a service is launched, its publication to Avahi/SERF is done the same way however:
+## For the monitor-as we gather more information from inside the container and outside container
 #########
