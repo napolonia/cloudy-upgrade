@@ -1,0 +1,15 @@
+#########
+## To install: just copy all files to their directories
+#########
+## Then restart serf: /etc/init.d/serf restart
+## Make sure serf is actually restarted, because it needs to load the handler
+## otherwise it will not clean the extraInfo tag
+#########
+## Important to know: the modifications made were the introduction
+## of calling resources/monitor-as/common.sh gather_information <service> <info_needed>
+## when services are published, either in php or .service files
+#########
+## There should not be any problems in Cloudy itself
+## For future work, the monitor system will appear as a webpage
+## the current extra.php under check-serf should NOT be used as is :)
+#########
