@@ -153,7 +153,16 @@ function startprogram() {
 	}
 	$config = readConfig();
 	$sc_id = getNodeID($config);
-	avahi_publish($sc_avahi_type, $sc_avahi_desc, $sc_port, "node_id=$sc_id");
+	//Extra Information added
+	$oldinfo="node_id=$sc_id";
+	//common.sh needs the config file, otherwise no access to it
+	$dom=dom_import_simplexml($config)->ownerDocument;
+	$dom->formatOutput = true;
+	$jobj=execute_program_shell("/bin/bash /var/local/cDistro/plug/resources/monitor-as/common.sh gather_information synchthing $(echo '".$dom->saveXML()."') ")['output'];
+	//2x addslashes NEED to be applied
+	$newinfo=",einfo=".addslashes(addslashes(trim(strtr($jobj,array(' '=>'',','=>';')))));
+	avahi_publish($sc_avahi_type, $sc_avahi_desc, $sc_port, $oldinfo.$newinfo);
+
 	return TRUE;
 }
 

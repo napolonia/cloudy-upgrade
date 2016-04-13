@@ -290,6 +290,7 @@ function _introducerStatus($homedir,$pidfile) {
 	$page .= txt(t("tahoe-lafs_introducer_grid"));
 	$page .= ptxt(file_get_contents($TAHOE_VARS['DAEMON_HOMEDIR'].'/introducer/grid.name'));
 	$page .= txt(t("tahoe-lafs_introducer_FURL"));
+	//Introducer.FURL may not be in here!!!!
 	$page .= ptxt(execute_program("sed 's/,127\.0\.0\.1:.*\//\//' ".$TAHOE_VARS['DAEMON_HOMEDIR'].'/'.$TAHOE_VARS['INTRODUCER_DIRNAME'].'/'.$TAHOE_VARS['INTRODUCER_FURLFILE']. " | sed 's/,192\.168\..*\..*:.*\//\//' ")['output'][0]);
 	$page .= txt(t("tahoe-lafs_introducer_web"));
 	$webPage = 'http://'.substr($_SERVER['HTTP_HOST'], 0, strpos($_SERVER['HTTP_HOST'], ':')+1). file_get_contents($TAHOE_VARS['DAEMON_HOMEDIR'].'/'.$TAHOE_VARS['INTRODUCER_DIRNAME'].'/'.$TAHOE_VARS['WEBPORT_FILENAME']); ;
@@ -459,8 +460,12 @@ function createIntroducer_post(){
 	$postStart = array();
 	foreach (execute_program_shell( $TAHOE_VARS['TAHOE_ETC_INITD_FILE'].' start '.$TAHOE_VARS['INTRODUCER_DIRNAME'])['output'] as $k => $v) { $postStart[] = $v; }
 
+	if(!is_file($TAHOE_VARS['DAEMON_HOMEDIR']."/".$TAHOE_VARS['INTRODUCER_DIRNAME']."/".$TAHOE_VARS['INTRODUCER_FURLFILE']))
+		execute_program_shell( 'echo "pb://$(cat '.$TAHOE_VARS['DAEMON_HOMEDIR'].'/'.$TAHOE_VARS['INTRODUCER_DIRNAME'].'/my_nodeid)@'.substr($_SERVER['HTTP_HOST'], 0, strpos($_SERVER['HTTP_HOST'], ':')+1).intval($_POST['INTRODUCER_WEBPORT']).'/introducer" > '.$TAHOE_VARS['DAEMON_HOMEDIR']."/".$TAHOE_VARS['INTRODUCER_DIRNAME']."/".$TAHOE_VARS['INTRODUCER_FURLFILE'] );
+
 	//This pause is needed in order to let the server start before showing the success/error text
 	sleep(2);
+	//We may have to create manually the introducer.furl file!!!
 	foreach (execute_program_shell( 'ps aux | grep tahoe | grep introducer | grep python | grep -v grep') as $k => $v) { $postStart[] = $v; }
 
 	execute_program_shell($TAHOE_VARS['AVAHI_SERVICE_COMMAND'].' enable '.$TAHOE_VARS['AVAHI_SERVICE_TAHOE'].' >/dev/null 2>&1');
@@ -727,7 +732,10 @@ function createNode_post(){
 	foreach (execute_program( '/etc/init.d/tahoe-lafs start node')['output'] as $k => $v) { $postStart[] = $v; }
 	//This pause is needed in order to let the server start before showing the success/error text
 	sleep(2);
+
+	//Maybe we need to create introducer.furl here!
 	foreach (execute_program( 'ps aux | grep tahoe | grep node | grep -v grep')['output'] as $k => $v) { $postStart[] = $v; }
+	execute_program_shell('/bin/sh /usr/share/avahi-service/files/tahoe-lafs.service nodeStart  >/dev/null 2>&1');
 
 	$postStartAll = "";
 		foreach ($postStart as $k => $v) { $postStartAll .= $v.'<br/>'; }
@@ -918,7 +926,7 @@ function stopIntroducer(){
 	global $TAHOE_VARS;
 
    $pid = detached_exec($TAHOE_VARS['TAHOE_ETC_INITD_FILE'].' stop introducer >/dev/null 2>&1');
-
+   execute_program_shell($TAHOE_VARS['AVAHI_SERVICE_COMMAND'].' stop '.$TAHOE_VARS['AVAHI_SERVICE_TAHOE'].' >/dev/null 2>&1');
 	setFlash(t('tahoe-lafs_flash_stopping_introducer'));
 	return(array('type'=> 'redirect', 'url' => $staticFile.'/'.'tahoe-lafs/introducer'));
 }
@@ -949,6 +957,7 @@ function startNode(){
 	global $TAHOE_VARS;
 
    $pid = detached_exec($TAHOE_VARS['TAHOE_ETC_INITD_FILE'].' start node >/dev/null 2>&1');
+   execute_program_shell('/bin/sh /usr/share/avahi-service/files/tahoe-lafs.service nodeStart  >/dev/null 2>&1 ');
 
 	setFlash(t('tahoe-lafs_flash_starting_storage'));
 	return(array('type'=> 'redirect', 'url' => $staticFile.'/'.'tahoe-lafs/node'));
@@ -959,6 +968,7 @@ function stopNode(){
 	global $TAHOE_VARS;
 
    $pid = detached_exec($TAHOE_VARS['TAHOE_ETC_INITD_FILE'].' stop node >/dev/null 2>&1');
+   execute_program_shell('/bin/sh /usr/share/avahi-service/files/tahoe-lafs.service nodeStop  >/dev/null 2>&1');
 
 	setFlash(t('tahoe-lafs_flash_stopping_storage'));
 	return(array('type'=> 'redirect', 'url' => $staticFile.'/'.'tahoe-lafs/node'));

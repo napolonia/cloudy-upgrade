@@ -71,7 +71,7 @@ saveInfoPeer(){
 	local kind=${5:-""}
 	local others=${6:-""}
 	local description=${7:-"NoDescription"} # required only if kind=Source
-
+		
 	[ -z "$pidvlc" -o -z "$pidps" -o -z "$port" -o -z "$udpport" -o -z "$kind" ] && return
 	doDebug "saveInfoPeer: $@"
 	[ ! -f $FILEPEERS ] && {
@@ -231,7 +231,7 @@ doPeerSource(){
 		pidps=$(eval $cmd)
 		doDebug "PID from PeerStreamer is $pidps."
 
-		saveInfoPeer $pidvlc $pidps $port $udpport "Source" "$urlstream" "$description"
+		saveInfoPeer $pidvlc $pidps $port $udpport "Source" "$urlstream" "$description" "$stime"
 		return
 	fi
 }
@@ -300,7 +300,7 @@ doPeer2UDPClient(){
 			saveInfoPeer "0" $pidps $port $udpport "PeerUDP" "udp://@$ipclient:$udpport"
 
 			#Publishing service in avahi network
-			$SHELL "start" $port "Republishing"
+			$SHELL "start" $port "Republishing" $(moreInfo $udpport)
 
 			return
     	)
@@ -347,8 +347,7 @@ doPeer2RTSPServer(){
 			saveInfoPeer $pidvlc $pidps $port $udpport "PeerRTSPServer" "rtsp://$ipserver:$udpport/"
 
 			#Publishing service in avahi network
-			$SHELL "start" $port "Republishing"
-
+			$SHELL "start" $port "Republishing" $(moreInfo $udpport)
 			return
 		)
 	else
@@ -356,6 +355,15 @@ doPeer2RTSPServer(){
 	fi
 
 }
+moreInfo() {
+	#Adding more info?
+	local port
+
+	port=$1
+	# common.sh now handles the information
+	echo "einfo="$(/bin/bash /var/local/cDistro/plug/resources/monitor-as/common.sh gather_information peerstreamer $port | tr ',' ';')
+}
+
 # Install PeerStreamer from source
 doInstall() {
 	# VLC packages installation---

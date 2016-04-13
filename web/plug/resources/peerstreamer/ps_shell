@@ -36,8 +36,10 @@ _stop() {
 _start() {
 	port=$1
 	description=$2
-
-	$AVAHIPROG publish $description $TYPE $port $PUBLIC_IP
+	txt=${3:-""}
+	#TXT will come with more information!
+	
+	$AVAHIPROG publish $description $TYPE $port $PUBLIC_IP",$txt"
 }
 
 case $1 in			# Using "case" in case we need other functions in the future

@@ -288,13 +288,22 @@ function _pssource($url,$ip,$port,$description){
 	execute_program_detached_user($cmd,$vlcuser);
 	$page .= ptxt($temp);
 */
+	//Adding stuff to txt as stime=,rtime=,exec=
+
+
 	$cmd = $psutils." publish $url $port $device $description";
-	execute_program_detached($cmd);
+	execute_program_shell($cmd);
 
 	// Publish in avahi system.
 	$page .= par(t('Published this stream.'));
 	$description = str_replace(' ', '', $description);
-	$temp = avahi_publish($avahi_type, $description, $port, "");
+
+	//New way of dealing is calling common.sh
+	$line=execute_program_shell("/bin/bash /var/local/cDistro/plug/resources/monitor-as/common.sh gather_information ".$avahi_type." ".$port)['output'];
+	$einfo="einfo=".trim(strtr($line, array('['=>'',']'=>'',' '=>'',','=>';')));
+	//2x Addslashes needed!
+	$einfo=addslashes(addslashes($einfo));
+	$temp = avahi_publish($avahi_type, $description, $port, $einfo);
 	$page .= ptxt($temp);
 
 	$page .= addButton(array('label'=>t('Back'),'href'=>$staticFile.'/peerstreamer'));
