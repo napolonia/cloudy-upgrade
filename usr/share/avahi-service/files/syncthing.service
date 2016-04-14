@@ -15,7 +15,7 @@ start()
 	NODE_ID=$(cat $NODE_ID_FILE)
 	#echo "Using node id $NODE_ID"
 	TXT="node_id=$NODE_ID"
-	TXT+=",einfo="$(/bin/bash /var/local/cDistro/plug/resources/monitor-as/common.sh gather_information synchthing $(cat $CONFIG_FILE)|jq -c .|tr ',' ';')
+	TXT+=",einfo="$(/bin/bash /var/local/cDistro/plug/resources/monitor-aas/common.sh gather_information synchthing $(cat $CONFIG_FILE)|jq -c .|tr ',' ';')
 	$AVAHIPS publish "$DESCRIBE" $TYPE $PORT "$TXT"
 }
 

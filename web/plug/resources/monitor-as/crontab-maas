@@ -1,3 +1,0 @@
-## Crontab file
-# info_Serf monitor hourly
-@hourly [ -x /var/local/cDistro/check-serf/info_serf.sh ] && cd /var/local/cDistro/check-serf/ && ./info_serf.sh > /dev/null 2>&1

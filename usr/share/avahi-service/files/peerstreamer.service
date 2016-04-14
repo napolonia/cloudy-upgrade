@@ -14,7 +14,7 @@ NAME=$(basename $0|sed -n 's/\(.*\).service/\1/p')
 getJSONEinfo() {
 	local PORT
 	$PORT=$1
-	/bin/bash /var/local/cDistro/plugs/resources/common.sh gather_information peerstreamer $PORT
+	echo $(/bin/bash /var/local/cDistro/plugs/resources/monitor-aas/common.sh gather_information peerstreamer $PORT|jq -c .)
 }
 
 start() {

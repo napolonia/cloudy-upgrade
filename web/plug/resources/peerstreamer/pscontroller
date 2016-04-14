@@ -361,7 +361,7 @@ moreInfo() {
 
 	port=$1
 	# common.sh now handles the information
-	echo "einfo="$(/bin/bash /var/local/cDistro/plug/resources/monitor-as/common.sh gather_information peerstreamer $port | tr ',' ';')
+	echo "einfo="$(/bin/bash /var/local/cDistro/plug/resources/monitor-aas/common.sh gather_information peerstreamer $port | tr ',' ';')
 }
 
 # Install PeerStreamer from source

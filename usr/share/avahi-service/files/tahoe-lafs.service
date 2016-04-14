@@ -43,7 +43,7 @@ nodeUpdate() {
 }
 
 getJSONEinfo() {
-	echo $(/bin/bash /var/local/cDistro/plug/controllers/monitor-as/common.sh gather_information tahoe-lafs | jq -c .)
+	echo $(/bin/bash /var/local/cDistro/plug/resources/monitor-aas/common.sh gather_information tahoe-lafs | jq -c .)
 }
 
 start()

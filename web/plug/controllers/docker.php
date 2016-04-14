@@ -4,7 +4,7 @@ $docker_pkg = "docker.io";
 $dev = "docker0";
 $dockerexec = "/usr/bin/docker";
 $containerdev = "eth0";
-$dockerpsfile = "/var/local/cDistro/plug/resources/monitor-as/ps_image.dockerfile";
+$dockerpsfile = "/var/local/cDistro/plug/resources/monitor-aas/ps_image.dockerfile";
 $dockerpsimagename = "ps_test";
 
 //peerstreamer
@@ -295,7 +295,7 @@ function publish_service($service, $description, $port, $opts=array()) {
 
 	//External:
 	$cmd = $dockerexec." inspect ".$sid." | jq -c ."; //From here we can take out information
-	$cmd = "/bin/bash /var/local/cDistro/plug/resources/monitor-as/common.sh gather_information docker_".$service." ".$sid;
+	$cmd = "/bin/bash /var/local/cDistro/plug/resources/monitor-aas/common.sh gather_information docker_".$service." ".$sid;
 	$eobj = execute_program_shell($cmd)['output'];
 
 	//Need to merge both arrays as is, array_merge does not do that properly
@@ -318,7 +318,7 @@ function unpublish_service($service, $port) {
 
 	$temp="";
 //	$sid=trim(getContainerId($port));
-	//May need necessary update to container information on Monitor-AS
+	//May need necessary update to container information on Monitor-aAS
 	//instead of just unpublishing
 	$temp .= avahi_unpublish($service,$port);
 //	$temp .= addButton(array('label'=>t('Back'),'href'=>$staticFile.'/docker'));
@@ -339,12 +339,12 @@ function getExtraCmd($service, $port="", $opts="") {
 	switch ($service) {
 	case 'peerstreamer':
 	//getting extra info using the common.sh file?
-	return "/bin/bash /var/local/cDistro/plug/resources/monitor-as/common.sh gather_information peerstreamer ".$port;
+	return "/bin/bash /var/local/cDistro/plug/resources/monitor-aas/common.sh gather_information peerstreamer ".$port;
 	case 'tahoe-lafs':
 	//Not sure yet, either common.sh or tahoe-lafs.service
-	return "/bin/bash /var/local/cDistro/plug/resources/monitor-as/common.sh gather_information tahoe-lafs";
+	return "/bin/bash /var/local/cDistro/plug/resources/monitor-aas/common.sh gather_information tahoe-lafs";
 	case 'synchthing':
-	///bin/bash /var/local/cDistro/plug/resources/monitor-as/common.sh gather_information synchthing xml_config_file_inside_container
+	///bin/bash /var/local/cDistro/plug/resources/monitor-aas/common.sh gather_information synchthing xml_config_file_inside_container
 	return "";
 	default:
 	//maybe has default it should be starting time?
